@@ -8,11 +8,11 @@ are created.
 
 # Current status
 
-![chapter2](./img/chapter-1.drawio.svg)
+![chapter2](./img/chapter-2.drawio.svg)
 
 # What is the plan
 
-![chapter3](./img/chapter-2.drawio.svg)
+![chapter3](./img/chapter-3.drawio.svg)
 
 # What do I do?
 
