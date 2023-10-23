@@ -67,7 +67,8 @@ export class ConfCdkRestaurantEventApiStack extends Stack {
                 allowCredentials: true
             },
             defaultMethodOptions: {
-                authorizationType: AuthorizationType.NONE
+                authorizationType: AuthorizationType.COGNITO,
+                authorizer: // CognitoUserPoolsAuthorizer
             }
         });
 
