@@ -1,4 +1,4 @@
-import {RemovalPolicy, Stack, StackProps} from 'aws-cdk-lib';
+import {IResource, RemovalPolicy, Stack, StackProps} from 'aws-cdk-lib';
 import {Construct} from 'constructs';
 import {CognitoUserPoolsAuthorizer, Cors, EndpointType, LambdaRestApi} from "aws-cdk-lib/aws-apigateway";
 import {Code, Function, Runtime} from "aws-cdk-lib/aws-lambda";
@@ -15,7 +15,9 @@ interface IConfCdkRestaurantEventApiStackProps extends StackProps {
 export class ConfCdkRestaurantEventApiStack extends Stack {
     private eventDatabase: Table;
     private eventLambda: Function;
+    private settingsLambda: Function;
     public eventLambdaApi: LambdaRestApi;
+    public settingsLambdaApi: LambdaRestApi;
     private apiCertificate: Certificate;
     private cognitoAuthorizer: CognitoUserPoolsAuthorizer;
     constructor(scope: Construct, id: string, props: IConfCdkRestaurantEventApiStackProps, subdomain: string) {
@@ -74,9 +76,9 @@ export class ConfCdkRestaurantEventApiStack extends Stack {
                 certificate: this.apiCertificate
             },
             defaultCorsPreflightOptions: {
-                allowOrigins: Cors.ALL_ORIGINS, // Add other allowed origins if needed
-                allowMethods: Cors.ALL_METHODS, // Add other allowed methods if needed
-                allowHeaders: [ '*' ], // Add other allowed headers if needed
+                allowOrigins: Cors.ALL_ORIGINS,
+                allowMethods: Cors.ALL_METHODS,
+                allowHeaders: [ '*' ],
                 allowCredentials: true
             },
             defaultMethodOptions: {
@@ -85,10 +87,39 @@ export class ConfCdkRestaurantEventApiStack extends Stack {
             }
         });
 
+        this.settingsLambda = new Function(this, subdomain + 'SettingsLambda', {
+            functionName: subdomain + 'SettingsLambda',
+            description: `Returns the frontend settings, for now just the UserPoolClientId. Deployed at ${new Date().toISOString()}`,
+            runtime: Runtime.NODEJS_18_X,
+            handler: 'index.handler',
+            code: Code.fromAsset(`src/lambda/settingsLambda`),
+            environment: {
+                COGNITO_USER_POOL_ID: props.cognitoUserPoolClient.userPoolClientId,
+            }
+        });
+
+        this.settingsLambdaApi = new LambdaRestApi(this, subdomain + 'SettingsApi', {
+            handler: this.settingsLambda,
+            proxy: true,
+            domainName: {
+                domainName: subdomain + '.cloud101.nl',
+                endpointType: EndpointType.REGIONAL,
+                certificate: this.apiCertificate
+            },
+            defaultCorsPreflightOptions: {
+                allowOrigins: Cors.ALL_ORIGINS,
+                allowMethods: Cors.ALL_METHODS,
+                allowHeaders: [ '*' ],
+                allowCredentials: true
+            },
+        });
+
         this.cognitoAuthorizer.applyRemovalPolicy(RemovalPolicy.DESTROY);
         this.eventDatabase.applyRemovalPolicy(RemovalPolicy.DESTROY);
         this.eventLambda.applyRemovalPolicy(RemovalPolicy.DESTROY);
-        this.apiCertificate.applyRemovalPolicy(RemovalPolicy.DESTROY);
+        this.settingsLambda.applyRemovalPolicy(RemovalPolicy.DESTROY);
+        this.settingsLambdaApi.applyRemovalPolicy(RemovalPolicy.DESTROY);
         this.eventLambdaApi.applyRemovalPolicy(RemovalPolicy.DESTROY);
+        this.apiCertificate.applyRemovalPolicy(RemovalPolicy.DESTROY);
     }
 }

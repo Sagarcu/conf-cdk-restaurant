@@ -55,6 +55,7 @@ export class ConfCdkPipelineStage extends cdk.Stage {
             ...props,
             eventApi: confCdkRestaurantEventApiStack.eventLambdaApi,
             confCdkRestaurantDistributionCertificate: confCdkRestaurantGlobalStack.confCdkRestaurantDistributionCertificate,
+            settingsApi: confCdkRestaurantEventApiStack.settingsLambdaApi,
             crossRegionReferences: true,
         }, subdomain);
     }

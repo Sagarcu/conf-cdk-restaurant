@@ -39,12 +39,6 @@ export class RestaurantEventHandler {
                     };
                 }
 
-            } else if (request.path === '/api/settings') {
-                return {
-                    statusCode: 200,
-                    body: JSON.stringify({ cognitoUserPoolId: process.env.COGNITO_USER_POOL_ID }),
-                    headers
-                };
             }
         } catch (err: any) {
             return {

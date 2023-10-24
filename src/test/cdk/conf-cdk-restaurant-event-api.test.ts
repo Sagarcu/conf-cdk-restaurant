@@ -44,7 +44,7 @@ describe('Testing the ConfCdkRestaurantEventApiStack', () => {
 
     // Test Lambda Function
     test('Lambda function is created', () => {
-        template.resourceCountIs('AWS::Lambda::Function', 1);
+        template.resourceCountIs('AWS::Lambda::Function', 2);
         template.hasResourceProperties('AWS::Lambda::Function', {
             FunctionName: 'subdomainEventLambda',
             Handler: 'index.handler',
@@ -54,7 +54,7 @@ describe('Testing the ConfCdkRestaurantEventApiStack', () => {
 
     // Test API Gateway
     test('Lambda API Gateway is created', () => {
-        template.resourceCountIs('AWS::ApiGateway::RestApi', 1);
+        template.resourceCountIs('AWS::ApiGateway::RestApi', 2);
     });
 
     // Test ACM Certificate
