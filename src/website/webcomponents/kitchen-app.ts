@@ -12,7 +12,6 @@ class KitchenApp extends LitElement {
 
     connectedCallback() {
         super.connectedCallback();
-
         this.getEvents();
     }
 
@@ -218,6 +217,8 @@ class KitchenApp extends LitElement {
       color: gray;
       cursor: none;
       animation: spin 2s linear infinite;
+      // If we don't set margin right, the spin will glitch-trigger a scrollbar 
+      margin-right: 10px;
     }
 
     @keyframes spin {

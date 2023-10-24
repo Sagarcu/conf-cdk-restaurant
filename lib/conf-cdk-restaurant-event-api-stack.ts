@@ -70,11 +70,6 @@ export class ConfCdkRestaurantEventApiStack extends Stack {
         this.eventLambdaApi = new LambdaRestApi(this, subdomain + 'EventLambdaApi', {
             handler: this.eventLambda,
             proxy: true,
-            domainName: {
-                domainName: subdomain + '.cloud101.nl',
-                endpointType: EndpointType.REGIONAL,
-                certificate: this.apiCertificate
-            },
             defaultCorsPreflightOptions: {
                 allowOrigins: Cors.ALL_ORIGINS,
                 allowMethods: Cors.ALL_METHODS,
@@ -101,11 +96,6 @@ export class ConfCdkRestaurantEventApiStack extends Stack {
         this.settingsLambdaApi = new LambdaRestApi(this, subdomain + 'SettingsApi', {
             handler: this.settingsLambda,
             proxy: true,
-            domainName: {
-                domainName: subdomain + '.cloud101.nl',
-                endpointType: EndpointType.REGIONAL,
-                certificate: this.apiCertificate
-            },
             defaultCorsPreflightOptions: {
                 allowOrigins: Cors.ALL_ORIGINS,
                 allowMethods: Cors.ALL_METHODS,
