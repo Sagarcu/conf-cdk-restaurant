@@ -48,7 +48,7 @@ export class ConfCdkRestaurantFrontendStack extends Stack {
       defaultRootObject: 'index.html',
       defaultBehavior: {
         origin: new S3Origin(bucket, { originAccessIdentity }),
-        // Cache disabled is not recommended here, instead removing cache on deployments via pipeline is desired
+        // Cache disabled is *not* recommended here, instead removing cache on deployments via pipeline is desired
         cachePolicy: CachePolicy.CACHING_DISABLED
       },
       domainNames: [ subdomain + '.cloud101.nl' ],
@@ -58,8 +58,8 @@ export class ConfCdkRestaurantFrontendStack extends Stack {
           origin: new RestApiOrigin(props.eventApi),
           allowedMethods: AllowedMethods.ALLOW_ALL,
           // Cache disabled is recommended here
-          cachePolicy: CachePolicy.CACHING_DISABLED
-        },
+          cachePolicy: CachePolicy.CACHING_DISABLED,
+        }
       },
     });
 

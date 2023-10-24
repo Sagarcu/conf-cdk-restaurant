@@ -5,6 +5,7 @@ import {ConfCdkRestaurantFrontendStack} from "./conf-cdk-restaurant-frontend-sta
 import {ConfCdkRestaurantGlobalStack} from "./conf-cdk-restaurant.global-stack";
 import {ConfCdkRestaurantEventApiStack} from "./conf-cdk-restaurant-event-api-stack";
 import {GitHubHandle, GitHubRepo, subdomain} from '../settings';
+import {ConfCdkRestaurantAuthenticationStack} from './conf-cdk-restaurant-authentication-stack';
 
 export class ConfCdkPipeline extends cdk.Stack {
     public subdomain: string;
@@ -42,7 +43,13 @@ export class ConfCdkPipelineStage extends cdk.Stage {
             },
         }, subdomain);
 
-        const confCdkRestaurantEventApiStack = new ConfCdkRestaurantEventApiStack(this, subdomain + '-confCdkRestaurantEventApiStack', props, subdomain);
+        const confCdkRestaurantAuthenticationStack = new ConfCdkRestaurantAuthenticationStack(this, subdomain + '-confCdkRestaurantAuthenticationStack', props, subdomain);
+
+        const confCdkRestaurantEventApiStack = new ConfCdkRestaurantEventApiStack(this, subdomain + '-confCdkRestaurantEventApiStack', {
+            ...props,
+            cognitoUserPool: confCdkRestaurantAuthenticationStack.cognitoUserPool,
+            cognitoUserPoolClient: confCdkRestaurantAuthenticationStack.cognitoUserPoolClient,
+        }, subdomain);
 
         const confCdkRestaurantFrontendStack = new ConfCdkRestaurantFrontendStack(this, subdomain + '-confCdkRestaurantFrontendStack', {
             ...props,

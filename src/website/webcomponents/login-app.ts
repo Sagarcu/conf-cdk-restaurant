@@ -1,11 +1,21 @@
 // Import LitElement and html
 import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
+import {ApiService} from '../services/api-service';
 
 @customElement('login-app')
 class LoginApp extends LitElement {
     @property({ type: Boolean })
     private showVerificationCodeInput: boolean = false;
+
+    @property({ type: String })
+    private cognitoUserPoolId: string;
+
+    async connectedCallback() {
+        super.connectedCallback();
+        this.cognitoUserPoolId = await ApiService.getCognitoUserPoolId();
+        console.log(this.cognitoUserPoolId);
+    }
 
     login() {
         console.log('Login method called');

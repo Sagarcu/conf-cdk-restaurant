@@ -1,18 +1,30 @@
 import {RemovalPolicy, Stack, StackProps} from 'aws-cdk-lib';
 import {Construct} from 'constructs';
-import {AuthorizationType, Cors, EndpointType, LambdaRestApi} from "aws-cdk-lib/aws-apigateway";
+import {CognitoUserPoolsAuthorizer, Cors, EndpointType, LambdaRestApi} from "aws-cdk-lib/aws-apigateway";
 import {Code, Function, Runtime} from "aws-cdk-lib/aws-lambda";
 import {AttributeType, BillingMode, StreamViewType, Table} from "aws-cdk-lib/aws-dynamodb";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
 import {HostedZone} from "aws-cdk-lib/aws-route53";
+import {UserPool, UserPoolClient} from 'aws-cdk-lib/aws-cognito';
+
+interface IConfCdkRestaurantEventApiStackProps extends StackProps {
+    cognitoUserPool: UserPool;
+    cognitoUserPoolClient: UserPoolClient;
+}
 
 export class ConfCdkRestaurantEventApiStack extends Stack {
     private eventDatabase: Table;
     private eventLambda: Function;
     public eventLambdaApi: LambdaRestApi;
     private apiCertificate: Certificate;
-    constructor(scope: Construct, id: string, props: StackProps, subdomain: string) {
+    private cognitoAuthorizer: CognitoUserPoolsAuthorizer;
+    constructor(scope: Construct, id: string, props: IConfCdkRestaurantEventApiStackProps, subdomain: string) {
         super(scope, id, props);
+
+        this.cognitoAuthorizer = new CognitoUserPoolsAuthorizer(this, 'dartsBackendCommandsCognitoUserPoolAuthorizer', {
+            cognitoUserPools: [ props.cognitoUserPool ],
+            authorizerName: 'dartsBackendCommandsCognitoUserPoolAuthorizer'
+        });
 
         this.eventDatabase = new Table(this, subdomain + 'EventDatabase', {
             tableName: subdomain + 'EventDatabase',
@@ -37,6 +49,7 @@ export class ConfCdkRestaurantEventApiStack extends Stack {
             handler: 'index.handler',
             environment: {
                 EVENT_SOURCE_TABLE_NAME: this.eventDatabase.tableName,
+                COGNITO_USER_POOL_ID: props.cognitoUserPool.userPoolId,
             }
         });
 
@@ -67,11 +80,12 @@ export class ConfCdkRestaurantEventApiStack extends Stack {
                 allowCredentials: true
             },
             defaultMethodOptions: {
-                authorizationType: AuthorizationType.COGNITO,
-                // Todo: authorizer: CognitoUserPoolsAuthorizer
+                authorizer: this.cognitoAuthorizer,
+                authorizationType: this.cognitoAuthorizer.authorizationType
             }
         });
 
+        this.cognitoAuthorizer.applyRemovalPolicy(RemovalPolicy.DESTROY);
         this.eventDatabase.applyRemovalPolicy(RemovalPolicy.DESTROY);
         this.eventLambda.applyRemovalPolicy(RemovalPolicy.DESTROY);
         this.apiCertificate.applyRemovalPolicy(RemovalPolicy.DESTROY);

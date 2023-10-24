@@ -21,4 +21,10 @@ export class ApiService {
             body: JSON.stringify({event}),
         });
     }
+
+    static async getCognitoUserPoolId() {
+        const response = await fetch(`https://${subdomain}.cloud101.nl/api/settings`);
+        const settings = await response.json();
+        return settings.cognitoUserPoolId;
+    }
 }

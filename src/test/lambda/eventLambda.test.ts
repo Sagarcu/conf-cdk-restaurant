@@ -18,6 +18,7 @@ describe('RestaurantEventHandler', () => {
             httpMethod: 'POST',
             body: JSON.stringify({ event: { eventType: 'test', eventId: '1234', timestamp: "2023-10-11T14:24:20.373Z" } }),
             headers: {},
+            path: '/api/restaurant'
         };
 
         const handler = new RestaurantEventHandler(mockDbOps);
@@ -32,6 +33,7 @@ describe('RestaurantEventHandler', () => {
             ...baseAPIGatewayEventMock,
             httpMethod: 'GET',
             headers: {},
+            path: '/api/restaurant'
         };
         mockDbOps.scanItems.mockResolvedValueOnce([]);
 
@@ -47,12 +49,13 @@ describe('RestaurantEventHandler', () => {
             ...baseAPIGatewayEventMock,
             httpMethod: 'DELETE',
             headers: {},
+            path: '/api/restaurant'
         };
 
         const handler = new RestaurantEventHandler(mockDbOps);
         const response = await handler.handler(event);
 
-        expect(response.statusCode).toBe(400);
+        expect(response.statusCode).toBe(404);
     });
 
     it('should return error for POST without body', async () => {
@@ -60,6 +63,7 @@ describe('RestaurantEventHandler', () => {
             ...baseAPIGatewayEventMock,
             httpMethod: 'POST',
             headers: {},
+            path: '/api/restaurant'
         };
 
         const handler = new RestaurantEventHandler(mockDbOps);

@@ -3,6 +3,8 @@ import {Template} from 'aws-cdk-lib/assertions';
 import {MockStack} from "./mocks/stack";
 import {mockEnv} from "./mocks/env";
 import {ConfCdkRestaurantEventApiStack} from "../../../lib/conf-cdk-restaurant-event-api-stack";
+import {UserPool, UserPoolClient} from 'aws-cdk-lib/aws-cognito';
+import {mockCognitoUserPool, mockUserPoolClient} from './mocks/cognito';
 
 describe('Testing the ConfCdkRestaurantEventApiStack', () => {
     let app: App;
@@ -16,6 +18,8 @@ describe('Testing the ConfCdkRestaurantEventApiStack', () => {
         mockStack = new MockStack(app);
 
         stackUnderTest = new ConfCdkRestaurantEventApiStack(app, 'TestStack', {
+            cognitoUserPool: mockCognitoUserPool(mockStack),
+            cognitoUserPoolClient: mockUserPoolClient(mockStack),
             env: mockEnv
         }, 'subdomain');
 

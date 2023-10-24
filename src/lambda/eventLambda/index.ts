@@ -18,27 +18,34 @@ export class RestaurantEventHandler {
         };
 
         try {
-            if (request.httpMethod === "POST") {
-                if (!request.body) throw new Error('Expected a restaurantEvent, but no data received');
-                const restaurantEvent: OrderEvent = JSON.parse(request.body).event;
+            if (request.path === '/api/restaurant') {
+                if (request.httpMethod === "POST") {
+                    if (!request.body) throw new Error('Expected a restaurantEvent, but no data received');
+                    const restaurantEvent: OrderEvent = JSON.parse(request.body).event;
 
-                await this.database.putItem(restaurantEvent);
+                    await this.database.putItem(restaurantEvent);
 
+                    return {
+                        statusCode: 200,
+                        body: `{ "result": "Executed ${restaurantEvent?.eventType} with id ${restaurantEvent?.eventId} at ${restaurantEvent.timestamp}"}`,
+                        headers
+                    };
+                } else if (request.httpMethod === "GET") {
+                    const items = await this.database.scanItems();
+                    return {
+                        statusCode: 200,
+                        body: JSON.stringify(items),
+                        headers
+                    };
+                }
+
+            } else if (request.path === '/api/settings') {
                 return {
                     statusCode: 200,
-                    body: `{ "result": "Executed ${restaurantEvent?.eventType} with id ${restaurantEvent?.eventId} at ${restaurantEvent.timestamp}"}`,
-                    headers
-                };
-            } else if (request.httpMethod === "GET") {
-                const items = await this.database.scanItems();
-                return {
-                    statusCode: 200,
-                    body: JSON.stringify(items),
+                    body: JSON.stringify({ cognitoUserPoolId: process.env.COGNITO_USER_POOL_ID }),
                     headers
                 };
             }
-
-            throw new Error('Unsupported HTTP method');
         } catch (err: any) {
             return {
                 statusCode: 400,
@@ -46,6 +53,12 @@ export class RestaurantEventHandler {
                 headers
             };
         }
+
+        return {
+            statusCode: 404,
+            body: JSON.stringify({ message: 'Path not found.' }),
+            headers
+        };
     }
 }
 
