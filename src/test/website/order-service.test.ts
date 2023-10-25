@@ -11,10 +11,10 @@ describe('OrderService', () => {
                         id: '1',
                         products: [],
                         status: 'open',
-                        tableName: 'A1'
+                        tableName: 'A1',
                     },
-                    timestamp: '2023-10-16T12:00:00Z'
-                }
+                    timestamp: '2023-10-16T12:00:00Z',
+                },
             ];
 
             const result = OrderService.eventsToKitchenOrders(events);
@@ -24,7 +24,7 @@ describe('OrderService', () => {
                 products: [],
                 status: 'preparing',
                 orderPlacedTimestamp: '2023-10-16T12:00:00Z',
-                tableName: 'A1'
+                tableName: 'A1',
             }]);
         });
     });
@@ -44,7 +44,7 @@ describe('OrderService', () => {
             };
             const result = OrderService.addOrRemoveProduct(currentOrder, product, true);
 
-            expect(result.products).toEqual([{ product, quantity: 1 }]);
+            expect(result.products).toEqual([{product, quantity: 1}]);
         });
 
         it('should increase product quantity if already in order and isAdding is true', () => {
@@ -56,12 +56,12 @@ describe('OrderService', () => {
             };
             const currentOrder: Order = {
                 id: '1',
-                products: [{ product, quantity: 1 }],
-                status: 'preparing'
+                products: [{product, quantity: 1}],
+                status: 'preparing',
             };
             const result = OrderService.addOrRemoveProduct(currentOrder, product, true);
 
-            expect(result.products).toEqual([{ product, quantity: 2 }]);
+            expect(result.products).toEqual([{product, quantity: 2}]);
         });
 
         it('should decrease product quantity if already in order and isAdding is false', () => {
@@ -73,12 +73,12 @@ describe('OrderService', () => {
             };
             const currentOrder: Order = {
                 id: '1',
-                products: [{ product, quantity: 2 }],
-                status: 'preparing'
+                products: [{product, quantity: 2}],
+                status: 'preparing',
             };
             const result = OrderService.addOrRemoveProduct(currentOrder, product, false);
 
-            expect(result.products).toEqual([{ product, quantity: 1 }]);
+            expect(result.products).toEqual([{product, quantity: 1}]);
         });
 
         it('should not modify the order if product not present and isAdding is false', () => {

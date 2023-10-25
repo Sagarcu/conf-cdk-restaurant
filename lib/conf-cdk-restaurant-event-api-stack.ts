@@ -1,6 +1,6 @@
-import {IResource, RemovalPolicy, Stack, StackProps} from 'aws-cdk-lib';
+import {RemovalPolicy, Stack, StackProps} from 'aws-cdk-lib';
 import {Construct} from 'constructs';
-import {CognitoUserPoolsAuthorizer, Cors, EndpointType, LambdaRestApi} from "aws-cdk-lib/aws-apigateway";
+import {CognitoUserPoolsAuthorizer, Cors, LambdaRestApi} from "aws-cdk-lib/aws-apigateway";
 import {Code, Function, Runtime} from "aws-cdk-lib/aws-lambda";
 import {AttributeType, BillingMode, StreamViewType, Table} from "aws-cdk-lib/aws-dynamodb";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
@@ -20,12 +20,13 @@ export class ConfCdkRestaurantEventApiStack extends Stack {
     public settingsLambdaApi: LambdaRestApi;
     private apiCertificate: Certificate;
     private cognitoAuthorizer: CognitoUserPoolsAuthorizer;
+
     constructor(scope: Construct, id: string, props: IConfCdkRestaurantEventApiStackProps, subdomain: string) {
         super(scope, id, props);
 
         this.cognitoAuthorizer = new CognitoUserPoolsAuthorizer(this, 'dartsBackendCommandsCognitoUserPoolAuthorizer', {
-            cognitoUserPools: [ props.cognitoUserPool ],
-            authorizerName: 'dartsBackendCommandsCognitoUserPoolAuthorizer'
+            cognitoUserPools: [props.cognitoUserPool],
+            authorizerName: 'dartsBackendCommandsCognitoUserPoolAuthorizer',
         });
 
         this.eventDatabase = new Table(this, subdomain + 'EventDatabase', {
@@ -52,13 +53,13 @@ export class ConfCdkRestaurantEventApiStack extends Stack {
             environment: {
                 EVENT_SOURCE_TABLE_NAME: this.eventDatabase.tableName,
                 COGNITO_USER_POOL_ID: props.cognitoUserPool.userPoolId,
-            }
+            },
         });
 
         this.eventDatabase.grantReadWriteData(this.eventLambda);
 
         const hostedZone = HostedZone.fromLookup(this, 'dartsFrontendHostedZone', {
-            domainName: 'cloud101.nl'
+            domainName: 'cloud101.nl',
         });
 
         this.apiCertificate = new Certificate(this, subdomain + 'EventCertificate', {
@@ -70,16 +71,20 @@ export class ConfCdkRestaurantEventApiStack extends Stack {
         this.eventLambdaApi = new LambdaRestApi(this, subdomain + 'EventLambdaApi', {
             handler: this.eventLambda,
             proxy: true,
+            domainName: {
+                domainName: subdomain + '.cloud101.nl',
+                certificate: this.apiCertificate,
+            },
             defaultCorsPreflightOptions: {
                 allowOrigins: Cors.ALL_ORIGINS,
                 allowMethods: Cors.ALL_METHODS,
-                allowHeaders: [ '*' ],
-                allowCredentials: true
+                allowHeaders: ['*'],
+                allowCredentials: true,
             },
             defaultMethodOptions: {
                 authorizer: this.cognitoAuthorizer,
-                authorizationType: this.cognitoAuthorizer.authorizationType
-            }
+                authorizationType: this.cognitoAuthorizer.authorizationType,
+            },
         });
 
         this.settingsLambda = new Function(this, subdomain + 'SettingsLambda', {
@@ -90,7 +95,7 @@ export class ConfCdkRestaurantEventApiStack extends Stack {
             code: Code.fromAsset(`src/lambda/settingsLambda`),
             environment: {
                 COGNITO_USER_POOL_ID: props.cognitoUserPoolClient.userPoolClientId,
-            }
+            },
         });
 
         this.settingsLambdaApi = new LambdaRestApi(this, subdomain + 'SettingsApi', {
@@ -99,8 +104,8 @@ export class ConfCdkRestaurantEventApiStack extends Stack {
             defaultCorsPreflightOptions: {
                 allowOrigins: Cors.ALL_ORIGINS,
                 allowMethods: Cors.ALL_METHODS,
-                allowHeaders: [ '*' ],
-                allowCredentials: true
+                allowHeaders: ['*'],
+                allowCredentials: true,
             },
         });
 

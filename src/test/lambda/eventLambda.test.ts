@@ -1,6 +1,6 @@
-import { RestaurantEventHandler } from '../../lambda/eventLambda/index'; // Update with the path to your file
-import { APIGatewayEvent } from 'aws-lambda';
-import { baseAPIGatewayEventMock } from './mocks/APIGatewayEvent'
+import {RestaurantEventHandler} from '../../lambda/eventLambda/index'; // Update with the path to your file
+import {APIGatewayEvent} from 'aws-lambda';
+import {baseAPIGatewayEventMock} from './mocks/APIGatewayEvent'
 
 describe('RestaurantEventHandler', () => {
     let mockDbOps: any;
@@ -8,7 +8,7 @@ describe('RestaurantEventHandler', () => {
     beforeEach(() => {
         mockDbOps = {
             putItem: jest.fn(),
-            scanItems: jest.fn()
+            scanItems: jest.fn(),
         };
     });
 
@@ -16,16 +16,16 @@ describe('RestaurantEventHandler', () => {
         const event: APIGatewayEvent = {
             ...baseAPIGatewayEventMock,
             httpMethod: 'POST',
-            body: JSON.stringify({ event: { eventType: 'test', eventId: '1234', timestamp: "2023-10-11T14:24:20.373Z" } }),
+            body: JSON.stringify({event: {eventType: 'test', eventId: '1234', timestamp: "2023-10-11T14:24:20.373Z"}}),
             headers: {},
-            path: '/api/restaurant'
+            path: '/api/restaurant',
         };
 
         const handler = new RestaurantEventHandler(mockDbOps);
         const response = await handler.handler(event);
 
         expect(response.statusCode).toBe(200);
-        expect(mockDbOps.putItem).toHaveBeenCalledWith({ eventType: 'test', eventId: '1234', timestamp: "2023-10-11T14:24:20.373Z" });
+        expect(mockDbOps.putItem).toHaveBeenCalledWith({eventType: 'test', eventId: '1234', timestamp: "2023-10-11T14:24:20.373Z"});
     });
 
     it('should handle GET request', async () => {
@@ -33,7 +33,7 @@ describe('RestaurantEventHandler', () => {
             ...baseAPIGatewayEventMock,
             httpMethod: 'GET',
             headers: {},
-            path: '/api/restaurant'
+            path: '/api/restaurant',
         };
         mockDbOps.scanItems.mockResolvedValueOnce([]);
 
@@ -49,7 +49,7 @@ describe('RestaurantEventHandler', () => {
             ...baseAPIGatewayEventMock,
             httpMethod: 'DELETE',
             headers: {},
-            path: '/api/restaurant'
+            path: '/api/restaurant',
         };
 
         const handler = new RestaurantEventHandler(mockDbOps);
@@ -63,7 +63,7 @@ describe('RestaurantEventHandler', () => {
             ...baseAPIGatewayEventMock,
             httpMethod: 'POST',
             headers: {},
-            path: '/api/restaurant'
+            path: '/api/restaurant',
         };
 
         const handler = new RestaurantEventHandler(mockDbOps);

@@ -14,7 +14,7 @@ export class RestaurantEventHandler {
             "Access-Control-Allow-Origin": "*", // Or specify the desired origin
             "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE", // Or any other methods you want to allow
             "Access-Control-Allow-Headers": "Content-Type, Authorization", // Specify desired headers
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         };
 
         try {
@@ -28,14 +28,14 @@ export class RestaurantEventHandler {
                     return {
                         statusCode: 200,
                         body: `{ "result": "Executed ${restaurantEvent?.eventType} with id ${restaurantEvent?.eventId} at ${restaurantEvent.timestamp}"}`,
-                        headers
+                        headers,
                     };
                 } else if (request.httpMethod === "GET") {
                     const items = await this.database.scanItems();
                     return {
                         statusCode: 200,
                         body: JSON.stringify(items),
-                        headers
+                        headers,
                     };
                 }
 
@@ -44,14 +44,14 @@ export class RestaurantEventHandler {
             return {
                 statusCode: 400,
                 body: JSON.stringify(err),
-                headers
+                headers,
             };
         }
 
         return {
             statusCode: 404,
-            body: JSON.stringify({ message: 'Path not found.' }),
-            headers
+            body: JSON.stringify({message: 'Path not found.'}),
+            headers,
         };
     }
 }

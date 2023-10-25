@@ -1,7 +1,7 @@
-import {LitElement, html, css} from 'lit';
+import {css, html, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import {OrderService} from '../services/order-service';
-import {ApiService} from '../services/api-service';
+import {apiService} from '../services/api-service';
 
 @customElement('waiter-app')
 class WaiterApp extends LitElement {
@@ -68,7 +68,7 @@ class WaiterApp extends LitElement {
     }
 
     async getOrderData() {
-        const events = await ApiService.getEvents();
+        const events = await apiService.getEvents();
 
         OrderService.eventsToKitchenOrders(events).map(orderCreatedEvent =>
             this.tables.find(table => table.name === orderCreatedEvent.tableName).previousOrders.push(orderCreatedEvent),
@@ -78,9 +78,9 @@ class WaiterApp extends LitElement {
     }
 
     sendOrderToAPI(tableOrder: TableOrder) {
-        ApiService.postOrderEvent(tableOrder)
-                  .then(response => response.ok ? console.log('Successfully send to the API') : console.error(`Failed to send order with id ${tableOrder.id} to API:`, response))
-                  .catch(error => console.error(`Failed to send order with id ${tableOrder.id} to API:`, error));
+        apiService.postOrderEvent(tableOrder)
+                  .then((response: any) => response.ok ? console.log('Successfully send to the API') : console.error(`Failed to send order with id ${tableOrder.id} to API:`, response))
+                  .catch((error: any) => console.error(`Failed to send order with id ${tableOrder.id} to API:`, error));
     }
 
     selectTable(name: string) {

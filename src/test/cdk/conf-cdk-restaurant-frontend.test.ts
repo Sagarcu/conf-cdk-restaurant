@@ -19,7 +19,7 @@ describe('Testing the front-end stack', () => {
             eventApi: mockStack.mockApi,
             settingsApi: mockStack.mockApi,
             confCdkRestaurantDistributionCertificate: mockStack.mockCertificate,
-            env: mockEnv
+            env: mockEnv,
         }, 'subdomain');
 
         template = Template.fromStack(stackUnderTest)
