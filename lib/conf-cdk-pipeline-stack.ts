@@ -23,13 +23,13 @@ export class ConfCdkPipeline extends cdk.Stack {
 
         pipeline.addStage(new ConfCdkPipelineStage(this, subdomain + '-deployConfCdkStacks', {
             ...props
-        }, subdomain));
+        }));
     }
 }
 
 export class ConfCdkPipelineStage extends cdk.Stage {
 
-    constructor(scope: Construct, id: string, props: cdk.StageProps, subdomain: string) {
+    constructor(scope: Construct, id: string, props: cdk.StageProps) {
         super(scope, id, props);
 
         const confCdkRestaurantGlobalStack = new ConfCdkRestaurantGlobalStack(this, subdomain + '-confCdkRestaurantGlobalStack', {
