@@ -9,6 +9,7 @@ import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets';
 import {LambdaRestApi} from "aws-cdk-lib/aws-apigateway";
+import {subdomain} from '../settings';
 
 interface ConfCdkRestaurantFrontendProps extends StackProps {
   confCdkRestaurantDistributionCertificate: Certificate;
@@ -16,7 +17,7 @@ interface ConfCdkRestaurantFrontendProps extends StackProps {
 }
 
 export class ConfCdkRestaurantFrontendStack extends Stack {
-  constructor(scope: Construct, id: string, props: ConfCdkRestaurantFrontendProps, subdomain: string) {
+  constructor(scope: Construct, id: string, props: ConfCdkRestaurantFrontendProps) {
     super(scope, id, props);
 
     // Point to existing hosted zone

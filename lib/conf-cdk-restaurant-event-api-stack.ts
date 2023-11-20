@@ -6,6 +6,7 @@ import {AttributeType, BillingMode, StreamViewType, Table} from "aws-cdk-lib/aws
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
 import {HostedZone} from "aws-cdk-lib/aws-route53";
 import {UserPool, UserPoolClient} from 'aws-cdk-lib/aws-cognito';
+import {subdomain} from '../settings';
 
 interface IConfCdkRestaurantEventApiStackProps extends StackProps {
     cognitoUserPool: UserPool;
@@ -18,7 +19,7 @@ export class ConfCdkRestaurantEventApiStack extends Stack {
     public eventLambdaApi: LambdaRestApi;
     private apiCertificate: Certificate;
     private cognitoAuthorizer: CognitoUserPoolsAuthorizer;
-    constructor(scope: Construct, id: string, props: IConfCdkRestaurantEventApiStackProps, subdomain: string) {
+    constructor(scope: Construct, id: string, props: IConfCdkRestaurantEventApiStackProps) {
         super(scope, id, props);
 
         this.cognitoAuthorizer = new CognitoUserPoolsAuthorizer(this, 'dartsBackendCommandsCognitoUserPoolAuthorizer', {

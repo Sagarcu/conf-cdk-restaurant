@@ -1,12 +1,13 @@
 import { CfnOutput, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { UserPool, UserPoolClient, UserPoolEmail } from 'aws-cdk-lib/aws-cognito';
+import {subdomain} from '../settings';
 
 export class ConfCdkRestaurantAuthenticationStack extends Stack {
     public cognitoUserPool: UserPool;
     public cognitoUserPoolClient: UserPoolClient;
 
-    constructor(scope: Construct, id: string, props: StackProps, subdomain: String) {
+    constructor(scope: Construct, id: string, props: StackProps) {
         super(scope, id, props);
 
         // The cognitoPool is a 'database' that holds the user registration data

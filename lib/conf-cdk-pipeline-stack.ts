@@ -36,21 +36,21 @@ export class ConfCdkPipelineStage extends cdk.Stage {
                 ...props.env,
                 region: 'us-east-1'
             },
-        }, subdomain);
+        });
 
-        const confCdkRestaurantAuthenticationStack = new ConfCdkRestaurantAuthenticationStack(this, subdomain + '-confCdkRestaurantAuthenticationStack', props, subdomain);
+        const confCdkRestaurantAuthenticationStack = new ConfCdkRestaurantAuthenticationStack(this, subdomain + '-confCdkRestaurantAuthenticationStack', props);
 
         const confCdkRestaurantEventApiStack = new ConfCdkRestaurantEventApiStack(this, subdomain + '-confCdkRestaurantEventApiStack', {
             ...props,
             cognitoUserPool: confCdkRestaurantAuthenticationStack.cognitoUserPool,
             cognitoUserPoolClient: confCdkRestaurantAuthenticationStack.cognitoUserPoolClient,
-        }, subdomain);
+        });
 
         const confCdkRestaurantFrontendStack = new ConfCdkRestaurantFrontendStack(this, subdomain + '-confCdkRestaurantFrontendStack', {
             ...props,
             eventApi: confCdkRestaurantEventApiStack.eventLambdaApi,
             confCdkRestaurantDistributionCertificate: confCdkRestaurantGlobalStack.confCdkRestaurantDistributionCertificate,
             crossRegionReferences: true,
-        }, subdomain);
+        });
     }
 }
