@@ -22,11 +22,6 @@ export class ConfCdkRestaurantEventApiStack extends Stack {
     constructor(scope: Construct, id: string, props: IConfCdkRestaurantEventApiStackProps) {
         super(scope, id, props);
 
-        this.cognitoAuthorizer = new CognitoUserPoolsAuthorizer(this, 'dartsBackendCommandsCognitoUserPoolAuthorizer', {
-            cognitoUserPools: [ props.cognitoUserPool ],
-            authorizerName: 'dartsBackendCommandsCognitoUserPoolAuthorizer'
-        });
-
         this.eventDatabase = new Table(this, subdomain + 'EventDatabase', {
             tableName: subdomain + 'EventDatabase',
             partitionKey: {
@@ -64,6 +59,11 @@ export class ConfCdkRestaurantEventApiStack extends Stack {
             domainName: subdomain + '.cloud101.nl',
             certificateName: subdomain + 'EventCertificate',
             validation: CertificateValidation.fromDns(hostedZone),
+        });
+
+        this.cognitoAuthorizer = new CognitoUserPoolsAuthorizer(this, 'dartsBackendCommandsCognitoUserPoolAuthorizer', {
+            cognitoUserPools: [ props.cognitoUserPool ],
+            authorizerName: 'dartsBackendCommandsCognitoUserPoolAuthorizer'
         });
 
         this.eventLambdaApi = new LambdaRestApi(this, subdomain + 'EventLambdaApi', {
