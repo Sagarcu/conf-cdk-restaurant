@@ -8,15 +8,12 @@ import {GitHubHandle, GitHubRepo, subdomain} from '../settings';
 import {ConfCdkRestaurantAuthenticationStack} from './conf-cdk-restaurant-authentication-stack';
 
 export class ConfCdkPipeline extends cdk.Stack {
-    public subdomain: string;
 
     constructor(scope: Construct, id: string, props: cdk.StackProps) {
         super(scope, subdomain + id, props);
 
-        this.subdomain = subdomain;
-
-        const pipeline = new CodePipeline(this, this.subdomain + '-ConfCdkPipeline', {
-            pipelineName: this.subdomain + '-ConfCdkPipeline',
+        const pipeline = new CodePipeline(this, subdomain + '-ConfCdkPipeline', {
+            pipelineName: subdomain + '-ConfCdkPipeline',
             synth: new ShellStep('Synth', {
                 input: CodePipelineSource.gitHub(`${GitHubHandle}/${GitHubRepo}`, 'main'),
                 // Build before testing because the test checks if the built files can be deployed too
@@ -24,9 +21,9 @@ export class ConfCdkPipeline extends cdk.Stack {
             })
         });
 
-        pipeline.addStage(new ConfCdkPipelineStage(this, this.subdomain + '-deployConfCdkStacks', {
+        pipeline.addStage(new ConfCdkPipelineStage(this, subdomain + '-deployConfCdkStacks', {
             ...props
-        }, this.subdomain));
+        }, subdomain));
     }
 }
 
