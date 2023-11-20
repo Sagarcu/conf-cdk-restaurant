@@ -21,9 +21,7 @@ export class ConfCdkPipeline extends cdk.Stack {
             })
         });
 
-        pipeline.addStage(new ConfCdkPipelineStage(this, subdomain + '-deployConfCdkStacks', {
-            ...props
-        }));
+        pipeline.addStage(new ConfCdkPipelineStage(this, subdomain + '-deployConfCdkStacks', props));
     }
 }
 
