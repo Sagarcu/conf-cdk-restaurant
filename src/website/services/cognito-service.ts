@@ -8,7 +8,7 @@ export class CognitoService {
 
     constructor() {
         this.loadAwsSettings();
-        this.client = new CognitoIdentityProviderClient({region: 'eu-west-1'}); // replace 'YOUR_AWS_REGION' with your AWS region, for instance: 'us-west-1'
+        this.client = new CognitoIdentityProviderClient({region: 'eu-west-1'});
     }
 
     public async login(email: string, password: string) {
