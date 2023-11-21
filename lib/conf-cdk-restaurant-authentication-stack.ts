@@ -12,7 +12,7 @@ export class ConfCdkRestaurantAuthenticationStack extends Stack {
 
         // The cognitoPool is a 'database' that holds the user registration data
         this.cognitoUserPool = new UserPool(this, subdomain + 'cognitoUserPool', {
-            userPoolName: 'userPool',
+            userPoolName: subdomain + 'UserPool',
             selfSignUpEnabled: true,
             // If you add email as alias, the username can no longer be in email address format because the email address will become an alias.
             signInAliases: {
@@ -31,6 +31,37 @@ export class ConfCdkRestaurantAuthenticationStack extends Stack {
 
         // The cognitoPoolClient is an internal api that we can access via API Gateway to use the CognitoPool
         this.cognitoUserPoolClient = new UserPoolClient(this, subdomain + 'cognitoUserPoolClient', {
+            userPoolClientName: subdomain + 'UserPoolClient',
+            userPool: this.cognitoUserPool,
+            authFlows: {
+                adminUserPassword: true,
+                userPassword: true,
+                custom: false,
+                userSrp: false
+            },
+        });
+
+        // The cognitoPool is a 'database' that holds the user registration data
+        const oldPool = new UserPool(this, subdomain + 'cognitoUserPool', {
+            userPoolName: 'userPool',
+            selfSignUpEnabled: true,
+            // If you add email as alias, the username can no longer be in email address format because the email address will become an alias.
+            signInAliases: {
+                username: true
+            },
+            // This doesn't set verified true, but sends an email with the verification code automatically.
+            autoVerify: {
+                email: true
+            },
+            // This is scary, dev only! You will delete your users on deletion. This is required for RemovalPolicy.DESTROY
+            deletionProtection: false,
+            // Important setting!
+            signInCaseSensitive: false,
+            email: UserPoolEmail.withCognito()
+        });
+
+        // The cognitoPoolClient is an internal api that we can access via API Gateway to use the CognitoPool
+        const oldClient = new UserPoolClient(this, subdomain + 'cognitoUserPoolClient', {
             userPoolClientName: 'userPoolClient',
             userPool: this.cognitoUserPool,
             authFlows: {

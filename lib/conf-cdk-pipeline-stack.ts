@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-import { CodePipeline, CodePipelineSource, ShellStep } from 'aws-cdk-lib/pipelines';
+import {Construct} from 'constructs';
+import {CodePipeline, CodePipelineSource, ShellStep} from 'aws-cdk-lib/pipelines';
 import {ConfCdkRestaurantFrontendStack} from "./conf-cdk-restaurant-frontend-stack";
 import {ConfCdkRestaurantGlobalStack} from "./conf-cdk-restaurant.global-stack";
 import {ConfCdkRestaurantEventApiStack} from "./conf-cdk-restaurant-event-api-stack";
@@ -17,8 +17,8 @@ export class ConfCdkPipeline extends cdk.Stack {
             synth: new ShellStep('Synth', {
                 input: CodePipelineSource.gitHub(`${GitHubHandle}/${GitHubRepo}`, 'main'),
                 // Build before testing because the test checks if the built files can be deployed too
-                commands: ['npm ci', 'npm run build', 'npm run test', 'npx cdk synth']
-            })
+                commands: ['npm ci', 'npm run build', 'npm run test', 'npx cdk synth'],
+            }),
         });
 
         pipeline.addStage(new ConfCdkPipelineStage(this, subdomain + '-deployConfCdkStacks', props));
@@ -34,7 +34,7 @@ export class ConfCdkPipelineStage extends cdk.Stage {
             ...props,
             env: {
                 ...props.env,
-                region: 'us-east-1'
+                region: 'us-east-1',
             },
         });
 
@@ -50,6 +50,7 @@ export class ConfCdkPipelineStage extends cdk.Stage {
             ...props,
             eventApi: confCdkRestaurantEventApiStack.eventLambdaApi,
             confCdkRestaurantDistributionCertificate: confCdkRestaurantGlobalStack.confCdkRestaurantDistributionCertificate,
+            settingsApi: confCdkRestaurantEventApiStack.settingsLambdaApi,
             crossRegionReferences: true,
         });
     }

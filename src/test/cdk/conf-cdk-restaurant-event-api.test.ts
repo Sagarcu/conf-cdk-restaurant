@@ -3,7 +3,6 @@ import {Template} from 'aws-cdk-lib/assertions';
 import {MockStack} from "./mocks/stack";
 import {mockEnv} from "./mocks/env";
 import {ConfCdkRestaurantEventApiStack} from "../../../lib/conf-cdk-restaurant-event-api-stack";
-import {UserPool, UserPoolClient} from 'aws-cdk-lib/aws-cognito';
 import {mockCognitoUserPool, mockUserPoolClient} from './mocks/cognito';
 
 describe('Testing the ConfCdkRestaurantEventApiStack', () => {
@@ -20,7 +19,7 @@ describe('Testing the ConfCdkRestaurantEventApiStack', () => {
         stackUnderTest = new ConfCdkRestaurantEventApiStack(app, 'TestStack', {
             cognitoUserPool: mockCognitoUserPool(mockStack),
             cognitoUserPoolClient: mockUserPoolClient(mockStack),
-            env: mockEnv
+            env: mockEnv,
         }, 'subdomain');
 
         template = Template.fromStack(stackUnderTest);
@@ -32,19 +31,19 @@ describe('Testing the ConfCdkRestaurantEventApiStack', () => {
         template.hasResourceProperties('AWS::DynamoDB::Table', {
             TableName: 'subdomainEventDatabase',
             KeySchema: [
-                { AttributeName: 'eventId', KeyType: 'HASH' },
-                { AttributeName: 'timestamp', KeyType: 'RANGE' }
+                {AttributeName: 'eventId', KeyType: 'HASH'},
+                {AttributeName: 'timestamp', KeyType: 'RANGE'},
             ],
             StreamSpecification: {
-                StreamViewType: "NEW_IMAGE"
+                StreamViewType: "NEW_IMAGE",
             },
-            BillingMode: "PAY_PER_REQUEST"
+            BillingMode: "PAY_PER_REQUEST",
         });
     });
 
     // Test Lambda Function
     test('Lambda function is created', () => {
-        template.resourceCountIs('AWS::Lambda::Function', 1);
+        template.resourceCountIs('AWS::Lambda::Function', 2);
         template.hasResourceProperties('AWS::Lambda::Function', {
             FunctionName: 'subdomainEventLambda',
             Handler: 'index.handler',
@@ -54,7 +53,7 @@ describe('Testing the ConfCdkRestaurantEventApiStack', () => {
 
     // Test API Gateway
     test('Lambda API Gateway is created', () => {
-        template.resourceCountIs('AWS::ApiGateway::RestApi', 1);
+        template.resourceCountIs('AWS::ApiGateway::RestApi', 2);
     });
 
     // Test ACM Certificate

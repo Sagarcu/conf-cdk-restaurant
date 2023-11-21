@@ -1,32 +1,40 @@
 // Import LitElement and html
-import {LitElement, html, css} from 'lit';
+import {css, html, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
-import {ApiService} from '../services/api-service';
+import {cognitoService} from '../services/cognito-service';
 
 @customElement('login-app')
 class LoginApp extends LitElement {
-    @property({ type: Boolean })
+    @property({type: Boolean})
     private showVerificationCodeInput: boolean = false;
 
-    @property({ type: String })
-    private cognitoUserPoolId: string;
+    @property({type: String})
+    private name: string = '';
+
+    @property({type: String})
+    private username: string = 'randy.vroegop@luminis.eu';
+
+    @property({type: String})
+    private password: string = 'Debian@r00t!';
+
+    @property({type: String})
+    private verificationCode: string = '';
 
     async connectedCallback() {
         super.connectedCallback();
-        this.cognitoUserPoolId = await ApiService.getCognitoUserPoolId();
-        console.log(this.cognitoUserPoolId);
     }
 
-    login() {
-        console.log('Login method called');
+    async login() {
+        await cognitoService.login(this.username, this.password);
+        this.dispatchEvent(new CustomEvent('login'));
     }
 
-    register() {
-        console.log('Register method called');
+    async register() {
+        cognitoService.register(this.username, this.password);
     }
 
-    verify() {
-        console.log('Verify method called');
+    async verify() {
+        cognitoService.verify(this.username, this.verificationCode);
     }
 
     showVerify() {
@@ -39,36 +47,50 @@ class LoginApp extends LitElement {
 
     render() {
         return html`
-            <div>
-                <label for="email">Email:</label>
-                <input id="email" type="email">
-            </div>
-            ${this.showVerificationCodeInput
-                    ? html`
-                        <div>
-                            <label for="verificationCode">Verification Code:</label>
-                            <input id="verificationCode" type="text">
-                        </div>
+        <h1>Welcome${this.name ? `, ${this.name}` : ''}</h1>
+        <div>
+            <label for="username">Username:</label>
+            <input 
+                id="username" 
+                type="text" 
+                .value="${this.username}" 
+                @input="${(e: InputEvent) => this.username = (e.target as HTMLInputElement).value}">
+        </div>
+        ${this.showVerificationCodeInput
+            ? html`
+                    <div>
+                        <label for="verificationCode">Verification Code:</label>
+                        <input 
+                            id="verificationCode" 
+                            type="text" 
+                            .value="${this.verificationCode}"
+                            @input="${(e: InputEvent) => this.verificationCode = (e.target as HTMLInputElement).value}">
+                    </div>
 
-                        <div class="buttons">
-                            <button @click="${this.cancelVerify}">Cancel</button>
-                            <button @click="${this.verify}">Verify</button>
-                        </div>
-                    `
-                    : html`
-                        <div>
-                            <label for="password">Password:</label>
-                            <input id="password" type="password">
-                        </div>
-                        
-                        <div class="buttons">
-                            <button @click="${this.login}">Login</button>
-                            <button @click="${this.register}">Register</button>
-                            <button @click="${this.showVerify}">I have a verification code</button>
-                        </div>
-                    `}
-        `;
+                    <div class="buttons">
+                        <button @click="${this.cancelVerify}">Cancel</button>
+                        <button @click="${this.verify}">Verify</button>
+                    </div>
+                `
+            : html`
+                    <div>
+                        <label for="password">Password:</label>
+                        <input 
+                            id="password" 
+                            type="password" 
+                            .value="${this.password}"
+                            @input="${(e: InputEvent) => this.password = (e.target as HTMLInputElement).value}">
+                    </div>
+                    
+                    <div class="buttons">
+                        <button @click="${this.login}">Login</button>
+                        <button @click="${this.register}">Register</button>
+                        <button @click="${this.showVerify}">I have a verification code</button>
+                    </div>
+                `}
+    `;
     }
+
 
     static styles = css`
       :host {
@@ -88,7 +110,7 @@ class LoginApp extends LitElement {
         width: 100%;
         padding: 10px 0;
       }
-      
+
       .buttons {
         margin-top: 30px;
       }
@@ -112,10 +134,14 @@ class LoginApp extends LitElement {
         margin: 10px 0;
         border: 2px solid #457;
       }
-      
+
       button:hover {
         background-color: #457;
         border: 2px solid transparent;
-    }
+      }
+
+      button:disabled {
+        background-color: #404d62;
+      }
     `;
 }

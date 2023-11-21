@@ -1,9 +1,7 @@
 import {App, Stack} from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import {Template} from 'aws-cdk-lib/assertions';
 import {ConfCdkRestaurantGlobalStack} from "../../../lib/conf-cdk-restaurant.global-stack";
 import {MockStack} from "./mocks/stack";
-import {ConfCdkRestaurantFrontendStack} from "../../../lib/conf-cdk-restaurant-frontend-stack";
-import {mockEnv} from "./mocks/env";
 
 
 describe('Testing the global stack', () => {
@@ -18,7 +16,7 @@ describe('Testing the global stack', () => {
         mockStack = new MockStack(app);
 
         stackUnderTest = new ConfCdkRestaurantGlobalStack(app, 'TestStack', {
-            env: {region: 'us-east-1', account: '531843824238'}
+            env: {region: 'us-east-1', account: '531843824238'},
         }, 'subdomain');
 
         template = Template.fromStack(stackUnderTest)
