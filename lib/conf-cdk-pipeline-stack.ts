@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import { CodePipeline, CodePipelineSource, ShellStep } from 'aws-cdk-lib/pipelines';
 import {ConfCdkRestaurantFrontendStack} from "./conf-cdk-restaurant-frontend-stack";
 import {ConfCdkRestaurantGlobalStack} from "./conf-cdk-restaurant.global-stack";
+import {ConfCdkRestaurantEventApiStack} from "./conf-cdk-restaurant-event-api-stack";
 import {GitHubHandle, GitHubRepo, subdomain} from '../settings';
 
 export class ConfCdkPipeline extends cdk.Stack {
@@ -40,9 +41,12 @@ export class ConfCdkPipelineStage extends cdk.Stage {
                 region: 'us-east-1'
             },
         }, subdomain);
+        
+        const confCdkRestaurantEventApiStack = new ConfCdkRestaurantEventApiStack(this, subdomain + '-confCdkRestaurantEventApiStack', props, subdomain);
 
         const confCdkRestaurantFrontendStack = new ConfCdkRestaurantFrontendStack(this, subdomain + '-confCdkRestaurantFrontendStack', {
             ...props,
+            eventApi: confCdkRestaurantEventApiStack.eventLambdaApi,
             confCdkRestaurantDistributionCertificate: confCdkRestaurantGlobalStack.confCdkRestaurantDistributionCertificate,
             crossRegionReferences: true,
         }, subdomain);
